@@ -67,9 +67,11 @@ $usuarios = $conn->query("SELECT id, nombre, usuario, email, rol FROM usuarios O
             
             <div class="grid-form">
                 <div class="form-group">
-                    <label>Nombre Completo</label>
-                    <input type="text" name="nombre" id="emp_nombre" class="input-dark" required placeholder="Ej: Juan Pérez">
-                    
+                <label>Nombre Completo</label>
+                <input type="text" name="nombre" id="emp_nombre" class="input-dark" required placeholder="Ej: Juan Pérez">
+                <small id="name_error" style="color: #ef4444; display: none; margin-top: 5px;">
+                    ⚠️ El nombre solo puede contener letras y espacios.
+                </small>                    
                     <label style="margin-top:15px; display:block;">Correo Electrónico</label>
                     <input type="email" name="email" id="emp_email" class="input-dark" required placeholder="juan@empresa.com">
                 </div>
@@ -79,8 +81,15 @@ $usuarios = $conn->query("SELECT id, nombre, usuario, email, rol FROM usuarios O
                     <input type="text" name="usuario" id="emp_usuario" class="input-dark" required placeholder="jperez2024">
                     
                     <label style="margin-top:15px; display:block;">Contraseña</label>
-                    <input type="password" name="password" id="emp_password" class="input-dark" placeholder="Mínimo 6 caracteres">
+                    <input type="password" name="password" id="emp_password" class="input-dark" placeholder="Mínimo 8 caracteres">
                     <small id="pass_help" style="color: #64748b; display:none;">Dejar en blanco para no cambiar.</small>
+
+                        <ul id="password-requirements" style="list-style: none; padding: 10px; margin-top: 5px; font-size: 0.75rem; background: #0f172a; border-radius: 6px;">
+                            <li id="req-length" class="invalid">✖ 8+ caracteres</li>
+                            <li id="req-upper" class="invalid">✖ Una mayúscula</li>
+                            <li id="req-number" class="invalid">✖ Un número</li>
+                            <li id="req-special" class="invalid">✖ Un carácter (@$!%*?)</li>
+                        </ul>
                 </div>
             </div>
 
@@ -141,4 +150,78 @@ window.onclick = function(event) {
     const modal = document.getElementById('modalEmpleado');
     if (event.target == modal) cerrarModalEmpleado();
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const passInput = document.getElementById('emp_password');
+    const reqs = {
+        length: document.getElementById('req-length'),
+        upper: document.getElementById('req-upper'),
+        number: document.getElementById('req-number'),
+        special: document.getElementById('req-special')
+    };
+
+    passInput.addEventListener('input', () => {
+        const val = passInput.value;
+        
+        // Si el campo está vacío y estamos editando, no mostrar error (es opcional)
+        if (val === "" && !passInput.required) {
+             Object.values(reqs).forEach(el => el.className = 'invalid');
+             return;
+        }
+
+        const checks = {
+            length: val.length >= 8,
+            upper: /[A-Z]/.test(val),
+            number: /[0-9]/.test(val),
+            special: /[@$!%*?&]/.test(val)
+        };
+
+        // Actualizar visualmente cada requisito
+        reqs.length.className = checks.length ? 'valid' : 'invalid';
+        reqs.length.innerText = (checks.length ? '✔' : '✖') + ' 8+ caracteres';
+
+        reqs.upper.className = checks.upper ? 'valid' : 'invalid';
+        reqs.upper.innerText = (checks.upper ? '✔' : '✖') + ' Una mayúscula';
+
+        reqs.number.className = checks.number ? 'valid' : 'invalid';
+        reqs.number.innerText = (checks.number ? '✔' : '✖') + ' Un número';
+
+        reqs.special.className = checks.special ? 'valid' : 'invalid';
+        reqs.special.innerText = (checks.special ? '✔' : '✖') + ' Un carácter (@$!%*?)';
+    });
+
+    const nameInput = document.getElementById('emp_nombre');
+const nameError = document.getElementById('name_error');
+
+if (nameInput) {
+    nameInput.addEventListener('input', () => {
+        // Esta RegEx permite letras (a-z, A-Z), espacios, y caracteres latinos (á, é, í, ó, ú, ñ)
+        const nameRegEx = /^[a-zA-ZÀ-ÿ\s]+$/;
+        
+        if (nameInput.value !== "" && !nameRegEx.test(nameInput.value)) {
+            nameError.style.display = 'block';
+            nameInput.style.borderColor = '#ef4444'; // Borde rojo si hay error
+        } else {
+            nameError.style.display = 'none';
+            nameInput.style.borderColor = ''; // Restaurar borde original
+        }
+    });
+}
+
+});
+document.getElementById('formEmpleado').addEventListener('submit', function(e) {
+    const nameInput = document.getElementById('emp_nombre').value;
+    const nameRegEx = /^[a-zA-ZÀ-ÿ\s]+$/;
+
+    if (!nameRegEx.test(nameInput)) {
+        e.preventDefault(); // Detener el envío
+        alert("Por favor, corrige el nombre antes de continuar.");
+        return;
+    }
+    
+    // Aquí también podrías validar la contraseña antes de enviar si es un nuevo empleado
+});
+
+// Tip: En tu función abrirModalEmpleado(), añade esta línea para resetear los iconos:
+// Object.values(reqs).forEach(el => el.className = 'invalid');
 </script>
