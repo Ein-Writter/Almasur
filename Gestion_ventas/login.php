@@ -4,17 +4,23 @@ include 'config/db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    $email = $_POST['usuario']; 
+    // 1. Recogemos los datos y limpiamos espacios
+    $usuario_input = trim($_POST['usuario']); 
     $password_escrita = $_POST['password'];
 
-    $sql = "SELECT id, nombre, password, rol FROM usuarios WHERE email = '$email' OR usuario = '$email'";
-    $result = $conn->query($sql);
+    // 2. CONSULTA SEGURA: Solo buscamos por la columna 'usuario'
+    // El "?" es un marcador de posición que evita inyecciones SQL
+    $stmt = $conn->prepare("SELECT id, nombre, password, rol FROM usuarios WHERE usuario = ?");
+    $stmt->bind_param("s", $usuario_input); // "s" significa que el parámetro es un String
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
         $usuario = $result->fetch_assoc();
         
+        // 3. Verificamos la contraseña
         if (password_verify($password_escrita, $usuario['password'])) {
-            session_regenerate_id();
+            session_regenerate_id(); // Protege la sesión
 
             $_SESSION['usuario_id'] = $usuario['id'];
             $_SESSION['nombre'] = $usuario['nombre'];
@@ -26,8 +32,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo "<script>alert('Contraseña incorrecta'); window.location.href='login.php';</script>";
         }
     } else {
-        echo "<script>alert('El usuario no existe'); window.location.href='login.php';</script>";
+        // Ahora el mensaje es claro: si no está en la columna 'usuario', no entra
+        echo "<script>alert('El nombre de usuario no existe'); window.location.href='login.php';</script>";
     }
+    
+    $stmt->close();
 }
 ?>
 <style>
