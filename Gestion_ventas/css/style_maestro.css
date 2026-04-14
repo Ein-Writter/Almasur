@@ -668,26 +668,9 @@ textarea.input-dark {
     }
 }
 
-body {
-    cursor: none; /* Ocultamos el cursor real */
-    margin: 0;
-    overflow-x: hidden;
-}
-
-#dragon-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    pointer-events: none; /* Importante: los clics pasan a través */
-    z-index: 99999; /* Siempre arriba */
-}
-
 #password-requirements li {
     margin-bottom: 2px;
     transition: all 0.2s ease;
 }
 .invalid { color: #94a3b8; opacity: 0.6; } /* Gris apagado cuando no cumple */
 .valid { color: #34d399; font-weight: bold; }   /* Verde brillante cuando cumple */
-
