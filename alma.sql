@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 14-04-2026 a las 19:22:26
+-- Tiempo de generación: 15-04-2026 a las 03:27:12
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -131,6 +131,7 @@ INSERT INTO `historial_operaciones` (`id`, `id_usuario`, `accion`, `fecha`) VALU
 
 CREATE TABLE `productos` (
   `id` int(11) NOT NULL,
+  `codigo` varchar(50) DEFAULT NULL,
   `nombre` varchar(100) NOT NULL,
   `descripcion` text DEFAULT NULL,
   `precio` decimal(10,2) NOT NULL,
@@ -144,20 +145,21 @@ CREATE TABLE `productos` (
 -- Volcado de datos para la tabla `productos`
 --
 
-INSERT INTO `productos` (`id`, `nombre`, `descripcion`, `precio`, `stock`, `id_usuario`, `creado_en`, `estado`) VALUES
-(2, 'arroz', NULL, 3.00, 10, 1, '2026-01-25 23:24:09', 1),
-(3, 'pasta', NULL, 4.00, 10, 1, '2026-01-25 23:24:26', 1),
-(4, 'harina', NULL, 3.00, 41, 1, '2026-01-27 23:01:23', 1),
-(5, 'leche', NULL, 3.00, 49, 1, '2026-01-27 23:01:42', 0),
-(6, 'jabon', NULL, 6.00, 60, 1, '2026-01-27 23:28:02', 1),
-(7, 'hifs', NULL, 567.00, 74, 1, '2026-01-27 23:30:26', 1),
-(8, 'fg', NULL, 45.00, 78, 1, '2026-01-28 00:43:55', 1),
-(9, 'rt', NULL, 45.00, 78, NULL, '2026-01-28 00:49:16', 1),
-(10, 'jabon', NULL, 5.00, 60, NULL, '2026-01-30 16:29:23', 1),
-(11, 'pepsi', NULL, 1.00, 10, NULL, '2026-01-30 17:45:08', 1),
-(12, 'cocacola', NULL, 2.00, 15, NULL, '2026-01-30 17:45:33', 1),
-(13, 'viagra', NULL, 50.00, 21, NULL, '2026-01-30 17:45:57', 1),
-(14, 'champu', NULL, 2.00, 30, NULL, '2026-01-30 17:46:20', 1);
+INSERT INTO `productos` (`id`, `codigo`, `nombre`, `descripcion`, `precio`, `stock`, `id_usuario`, `creado_en`, `estado`) VALUES
+(2, NULL, 'arroz', NULL, 3.00, 10, 1, '2026-01-25 23:24:09', 1),
+(3, NULL, 'pasta', NULL, 4.00, 10, 1, '2026-01-25 23:24:26', 1),
+(4, NULL, 'harina', NULL, 3.00, 41, 1, '2026-01-27 23:01:23', 1),
+(5, NULL, 'leche', NULL, 3.00, 49, 1, '2026-01-27 23:01:42', 0),
+(6, NULL, 'jabon', NULL, 6.00, 60, 1, '2026-01-27 23:28:02', 1),
+(7, NULL, 'hifs', NULL, 567.00, 74, 1, '2026-01-27 23:30:26', 1),
+(8, NULL, 'fg', NULL, 45.00, 78, 1, '2026-01-28 00:43:55', 1),
+(9, NULL, 'rt', NULL, 45.00, 78, NULL, '2026-01-28 00:49:16', 1),
+(10, NULL, 'jabon', NULL, 5.00, 60, NULL, '2026-01-30 16:29:23', 1),
+(11, NULL, 'pepsi', NULL, 1.00, 10, NULL, '2026-01-30 17:45:08', 1),
+(12, NULL, 'cocacola', NULL, 2.00, 15, NULL, '2026-01-30 17:45:33', 1),
+(13, NULL, 'viagra', NULL, 50.00, 21, NULL, '2026-01-30 17:45:57', 1),
+(14, NULL, 'champu', NULL, 2.00, 30, NULL, '2026-01-30 17:46:20', 1),
+(15, NULL, 'asdasd', NULL, 0.01, 0, NULL, '2026-04-14 23:43:10', 1);
 
 -- --------------------------------------------------------
 
@@ -315,7 +317,7 @@ ALTER TABLE `detalle_ventas`
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
