@@ -100,3 +100,58 @@ if (!$config) {
         </div>
     </div>
 </main>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. Selección de todos los campos
+    const inputNombre = document.querySelector('input[name="nombre_negocio"]');
+    const inputRuc = document.querySelector('input[name="ruc"]');
+    const inputDireccion = document.querySelector('input[name="direccion"]');
+    const inputTelefono = document.querySelector('input[name="telefono"]');
+    const textareaMensaje = document.querySelector('textarea[name="mensaje_factura"]');
+
+    // --- VALIDACIONES DE ENTRADA (Bloqueo de caracteres) ---
+
+    // Nombre del Negocio: Solo letras, números y espacios (Máx 50 caracteres)
+    if (inputNombre) {
+        inputNombre.setAttribute("maxlength", "50");
+        inputNombre.addEventListener('input', function() {
+            this.value = this.value.replace(/[^a-zA-Z ]/g, '');
+            document.getElementById('p-nombre').innerText = this.value || 'Tu Negocio';
+        });
+    }
+
+    // RUC / DNI: Solo letras y números (Sin espacios)
+    if (inputRuc) {
+        inputRuc.setAttribute("maxlength", "20");
+        inputRuc.addEventListener('input', function() {
+            this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');
+            document.getElementById('p-ruc').innerText = this.value || '00000000';
+        });
+    }
+
+    // Dirección: Letras, números, espacios, puntos, comas y guiones
+    if (inputDireccion) {
+        inputDireccion.setAttribute("maxlength", "100");
+        inputDireccion.addEventListener('input', function() {
+            this.value = this.value.replace(/[^a-zA-Z0-9 .,#-]/g, '');
+        });
+    }
+
+    // Teléfono: Solo números y el signo +
+    if (inputTelefono) {
+        inputTelefono.setAttribute("maxlength", "11");
+        inputTelefono.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9+]/g, '');
+        });
+    }
+
+    // Mensaje al Pie: Limitar a 150 caracteres para no deformar el ticket
+    if (textareaMensaje) {
+        textareaMensaje.setAttribute("maxlength", "150");
+        textareaMensaje.addEventListener('input', function() {
+            this.value = this.value.replace(/[^a-zA-Z.,#- ]/g, '');
+            document.getElementById('p-mensaje').innerText = this.value || '¡Gracias por su compra!';
+        });
+    }
+});
+</script>
