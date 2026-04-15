@@ -78,16 +78,21 @@ include 'includes/sidebar.php';
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                 <div>
                     <label style="display:block; margin-bottom:8px;">Identidad (Cédula/DNI):</label>
-                    <input type="text" id="m_identidad" class="input-dark" placeholder="Ej: 12345678" required>
+                    <input type="text" id="m_identidad" class="input-dark" placeholder="Ej: 12345678" required 
+                    minlength="7" maxlength="9"s
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 </div>
                 <div>
                     <label style="display:block; margin-bottom:8px;">Teléfono:</label>
-                    <input type="text" id="m_telefono" class="input-dark" placeholder="Ej: 0412-0000000">
+                    <input type="text" id="m_telefono" class="input-dark" placeholder="Ej: 04120000000"
+                    minlength="7" maxlength="11"s
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 </div>
             </div>
 
             <label style="display:block; margin-bottom:8px;">Nombre Completo:</label>
-            <input type="text" id="m_nombre" class="input-dark" placeholder="Nombre y Apellido" required>
+            <input type="text" id="m_nombre" class="input-dark" placeholder="Nombre y Apellido" required
+                    oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
             
             <div style="display: flex; justify-content: flex-end; gap: 15px; margin-top: 10px;">
                 <button type="button" onclick="cerrarModal()" class="btn-rojo" style="padding: 12px 25px;">Cancelar</button>
@@ -294,8 +299,10 @@ function abrirModal() {
 function cerrarModal() { 
     const modal = document.getElementById('modalCliente');
     modal.style.display = 'none'; 
+    
+    // Esto limpia todos los inputs dentro del formulario automáticamente
+    document.getElementById('formNuevoCliente').reset(); 
 }
-
 function guardarClienteRapido() {
     const datos = {
         identidad: document.getElementById('m_identidad').value,
@@ -307,6 +314,7 @@ function guardarClienteRapido() {
         alert("Por favor llena los campos obligatorios");
         return;
     }
+    
 
     fetch('api/registrar_cliente_ajax.php', {
         method: 'POST',
