@@ -38,7 +38,7 @@ $side_nom  = !empty($data_side['nombre_negocio']) ? $data_side['nombre_negocio']
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
         <div class="logo-container">
-            <img src="uploads/almasur.png" alt="Almasur Logo" class="logo-sistema">
+            <img id="logo-sidebar" src="uploads/almasur.png" alt="Almasur Logo" class="logo-sistema">
             <span class="business-name">ALMASUR</span>
         </div>
         <button id="toggle-btn" class="toggle-btn">
@@ -94,6 +94,56 @@ document.addEventListener("DOMContentLoaded", function() {
             icon.classList.replace("fa-chevron-right", "fa-bars");
         }
     });
+});
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. Referencias exactas a tu sidebar.php
+    const inputLogo = document.querySelector('input[name="logo"]');
+    const logoSidebar = document.getElementById('logo-sidebar'); // La imagen que acabamos de marcar
+    const inputNombre = document.querySelector('input[name="nombre_negocio"]');
+    const nombreNegocioSidebar = document.querySelector('.business-name'); // El texto "ALMASUR"
+
+    // 2. Lógica para cambiar el LOGO
+    if (inputLogo && logoSidebar) {
+        inputLogo.addEventListener('change', function(e) {
+            const archivo = e.target.files[0];
+            if (archivo && archivo.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    logoSidebar.src = event.target.result;
+                }
+                reader.readAsDataURL(archivo);
+            }
+        });
+    }
+
+    // 3. Lógica para cambiar el NOMBRE y sincronizar con Ticket
+    if (inputNombre) {
+        inputNombre.addEventListener('input', function() {
+            const valor = this.value || 'ALMASUR';
+            
+            // Cambia el nombre en el Sidebar
+            if (nombreNegocioSidebar) {
+                nombreNegocioSidebar.innerText = valor.toUpperCase();
+            }
+            
+            // Cambia el nombre en el Ticket (Vista Previa)
+            const pNombre = document.getElementById('p-nombre');
+            if (pNombre) {
+                pNombre.innerText = valor;
+            }
+        });
+    }
+
+    // 4. Validaciones de números (Teléfono y RUC)
+    const inputTelefono = document.querySelector('input[name="telefono"]');
+    if (inputTelefono) {
+         inputTelefono.setAttribute("maxlength", "11");
+        inputTelefono.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9+]/g, '');
+        });
+    }
 });
 </script>
 
