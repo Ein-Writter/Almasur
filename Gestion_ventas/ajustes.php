@@ -100,57 +100,76 @@ if (!$config) {
         </div>
     </div>
 </main>
+
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // 1. Selección de todos los campos
+    // 1. Elementos del Formulario
     const inputNombre = document.querySelector('input[name="nombre_negocio"]');
     const inputRuc = document.querySelector('input[name="ruc"]');
     const inputDireccion = document.querySelector('input[name="direccion"]');
     const inputTelefono = document.querySelector('input[name="telefono"]');
     const textareaMensaje = document.querySelector('textarea[name="mensaje_factura"]');
+    const inputLogo = document.querySelector('input[name="logo"]');
 
-    // --- VALIDACIONES DE ENTRADA (Bloqueo de caracteres) ---
+    // 2. Elementos de Previsualización (Ticket y Sidebar)
+    const pNombre = document.getElementById('p-nombre');
+    const pRuc = document.getElementById('p-ruc');
+    const pMensaje = document.getElementById('p-mensaje');
+    const logoSidebar = document.getElementById('logo-sidebar'); // Recuerda añadir este ID en sidebar.php
+    const nombreSidebar = document.querySelector('.business-name');
 
-    // Nombre del Negocio: Solo letras, números y espacios (Máx 50 caracteres)
+    // --- VALIDACIÓN Y PREVIEW: NOMBRE ---
     if (inputNombre) {
-        inputNombre.setAttribute("maxlength", "50");
         inputNombre.addEventListener('input', function() {
-            this.value = this.value.replace(/[^a-zA-Z ]/g, '');
-            document.getElementById('p-nombre').innerText = this.value || 'Tu Negocio';
+            this.value = this.value.replace(/[^a-zA-Z0-9 ]/g, ''); // Permite números y letras
+            if (pNombre) pNombre.innerText = this.value || 'Tu Negocio';
+            if (nombreSidebar) nombreSidebar.innerText = this.value.toUpperCase() || 'ALMASUR';
         });
     }
 
-    // RUC / DNI: Solo letras y números (Sin espacios)
+    // --- VALIDACIÓN Y PREVIEW: RUC ---
     if (inputRuc) {
-        inputRuc.setAttribute("maxlength", "20");
         inputRuc.addEventListener('input', function() {
             this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');
-            document.getElementById('p-ruc').innerText = this.value || '00000000';
+            if (pRuc) pRuc.innerText = this.value || '00000000';
         });
     }
 
-    // Dirección: Letras, números, espacios, puntos, comas y guiones
-    if (inputDireccion) {
-        inputDireccion.setAttribute("maxlength", "100");
-        inputDireccion.addEventListener('input', function() {
-            this.value = this.value.replace(/[^a-zA-Z0-9 .,#-]/g, '');
-        });
-    }
-
-    // Teléfono: Solo números y el signo +
+    // --- VALIDACIÓN: TELÉFONO (Solo números) ---
     if (inputTelefono) {
-        inputTelefono.setAttribute("maxlength", "11");
         inputTelefono.addEventListener('input', function() {
             this.value = this.value.replace(/[^0-9+]/g, '');
         });
     }
 
-    // Mensaje al Pie: Limitar a 150 caracteres para no deformar el ticket
+    // --- VALIDACIÓN: DIRECCIÓN ---
+    if (inputDireccion) {
+        inputDireccion.addEventListener('input', function() {
+            this.value = this.value.replace(/[^a-zA-Z0-9 .,#-]/g, '');
+        });
+    }
+
+    // --- VALIDACIÓN Y PREVIEW: MENSAJE PIE ---
     if (textareaMensaje) {
-        textareaMensaje.setAttribute("maxlength", "150");
         textareaMensaje.addEventListener('input', function() {
-            this.value = this.value.replace(/[^a-zA-Z.,#- ]/g, '');
-            document.getElementById('p-mensaje').innerText = this.value || '¡Gracias por su compra!';
+            this.value = this.value.replace(/[^a-zA-Z.,!¡¿? ]/g, '');
+            if (pMensaje) pMensaje.innerText = this.value || '¡Gracias por su compra!';
+        });
+    }
+
+    // --- LÓGICA DE LOGO: CAMBIO EN SIDEBAR ---
+    if (inputLogo) {
+        inputLogo.addEventListener('change', function(e) {
+            const archivo = e.target.files[0];
+            if (archivo && archivo.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    if (logoSidebar) {
+                        logoSidebar.src = event.target.result;
+                    }
+                }
+                reader.readAsDataURL(archivo);
+            }
         });
     }
 });
