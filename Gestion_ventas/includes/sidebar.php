@@ -4,30 +4,37 @@ if (!isset($_SESSION['usuario_id'])) { header("Location: index.php"); exit(); }
 
 $u_id = $_SESSION['usuario_id'];
 $rol_usuario = $_SESSION['usuario_rol'] ?? 'Empleado';
-$foto_usuario = $_SESSION['usuario_foto'] ?? 'assets/img/default_avatar.jpg';
+
+// --- NUEVA LÓGICA PARA EL LOGO Y FOTO ---
+$query_logo = $conn->query("SELECT logo FROM configuracion WHERE id = 1");
+$reg_logo = $query_logo->fetch_assoc();
+$ruta_logo = (!empty($reg_logo['logo'])) ? $reg_logo['logo'] : 'uploads/almasur.png';
+
+// Usamos 'foto_perfil' que es la variable que sincronizamos en el script anterior
+$foto_usuario = $_SESSION['foto_perfil'] ?? 'assets/img/default_avatar.jpg'; 
 ?>
 
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
         <div class="logo-container">
-            <img id="logo-sidebar" src="uploads/almasur.png" alt="Logo" class="logo-sistema">
-            <span class="business-name">ALMASUR</span>
-        </div>
+    <img id="logo-sidebar" src="<?php echo $ruta_logo; ?>?v=<?php echo time(); ?>" alt="Logo" class="logo-sistema">
+    <span class="business-name">ALMASUR</span>
+</div>
         <button id="toggle-btn" class="toggle-btn">
             <i class="fa-solid fa-bars"></i>
         </button>
     </div>
 
     <a href="perfil.php" class="user-link">
-        <div class="user-panel">
-            <div class="image">
-                <img src="<?php echo $foto_usuario . '?v=' . time(); ?>" class="img-perfil-sidebar">
-            </div>
-            <div class="info">
-                <p class="user-name"><?php echo $_SESSION['nombre']; ?></p>
-                <small class="user-role"><?php echo $rol_usuario; ?></small>
-            </div>
-        </div>
+       <div class="user-panel">
+    <div class="image">
+        <img src="<?php echo $_SESSION['foto_perfil'] ?? 'uploads/default_avatar.png'; ?>?v=<?php echo time(); ?>" class="img-perfil-sidebar">
+    </div>
+    <div class="info">
+        <p class="user-name"><?php echo $_SESSION['nombre']; ?></p>
+        <small class="user-role"><?php echo $rol_usuario; ?></small>
+    </div>
+</div>
     </a>
 
     <hr class="sidebar-divider">
