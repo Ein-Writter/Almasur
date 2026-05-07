@@ -138,6 +138,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // --- VALIDACIÓN: TELÉFONO (Solo números) ---
     if (inputTelefono) {
         inputTelefono.addEventListener('input', function() {
+            inputTelefono.setAttribute("maxlength", "11");
             this.value = this.value.replace(/[^0-9+]/g, '');
         });
     }
