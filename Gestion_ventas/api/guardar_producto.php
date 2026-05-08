@@ -7,6 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
     $codigo = $conn->real_escape_string(trim($_POST['codigo']));
     $nombre = $conn->real_escape_string(trim($_POST['nombre']));
+    $marca = $conn->real_escape_string(trim($_POST['marca'])); // <-- CAPTURADO Y ESCAPADO
     $categoria = $conn->real_escape_string($_POST['categoria']);
     $precio = floatval($_POST['precio']);
     $stock = intval($_POST['stock']);
@@ -24,7 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // --- ACTUALIZAR PRODUCTO EXISTENTE ---
         $sql = "UPDATE productos SET 
                 codigo = '$codigo', 
-                nombre = '$nombre', 
+                nombre = '$nombre',
+                marca = '$marca', 
                 categoria = '$categoria', 
                 precio = $precio, 
                 stock = $stock 
@@ -32,8 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $status = "updated";
     } else {
         // --- INSERTAR NUEVO PRODUCTO ---
-        $sql = "INSERT INTO productos (codigo, nombre, categoria, precio, stock) 
-                VALUES ('$codigo', '$nombre', '$categoria', $precio, $stock)";
+        $sql = "INSERT INTO productos (codigo, nombre, marca, categoria, precio, stock, estado) 
+                VALUES ('$codigo', '$nombre', '$marca', '$categoria', '$precio', '$stock', 1)";
         $status = "success";
     }
 
@@ -41,7 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($conn->query($sql)) {
         header("Location: ../inventario.php?status=$status");
     } else {
-        // Si hay un error, lo mostramos para depurar
         echo "Error en la base de datos: " . $conn->error;
     }
 }
