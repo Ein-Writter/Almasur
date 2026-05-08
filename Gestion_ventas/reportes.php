@@ -8,7 +8,7 @@ $stock_bajo = $conn->query("SELECT nombre, stock, precio FROM productos WHERE st
 $facturas = $conn->query("SELECT v.id, v.fecha, v.total, u.nombre as vendedor 
                           FROM ventas v 
                           JOIN usuarios u ON v.id_usuario = u.id 
-                          ORDER BY v.fecha DESC LIMIT 10");
+                          ORDER BY v.id DESC LIMIT 10");
 
 $sql_grafica = "SELECT DATE(fecha) as dia, SUM(total) as total_dia 
                 FROM ventas 
@@ -33,7 +33,13 @@ while($row = $res_grafica->fetch_assoc()) {
     <div class="grid-reportes" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
         
         <div class="card-moderna">
-            <h3>⚠️ Stock Bajo (Crítico)</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0;">⚠️ Stock Bajo (Crítico)</h3>
+                <a href="reporte_stock_bajo.php" target="_blank" class="btn-mini" style="background: #f87171; padding: 8px 12px; text-decoration: none;">
+                    <i class="fa-solid fa-print"></i> Imprimir Lista
+                </a>
+            </div>
+
             <table class="tabla-moderna">
                 <thead>
                     <tr>
@@ -43,16 +49,21 @@ while($row = $res_grafica->fetch_assoc()) {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php while($row = $stock_bajo->fetch_assoc()): ?>
-                    <tr style="color: <?php echo $row['stock'] <= 2 ? '#ef4444' : '#f59e0b'; ?>">
-                        <td><?php echo $row['nombre']; ?></td>
-                        <td><strong><?php echo $row['stock']; ?></strong></td>
-                        <td><a href="inventario.php" class="btn-mini">Surtir</a></td>
-                    </tr>
-                    <?php endwhile; ?>
+                    <?php if($stock_bajo->num_rows > 0): ?>
+                        <?php while($row = $stock_bajo->fetch_assoc()): ?>
+                        <tr style="color: <?php echo $row['stock'] <= 2 ? '#ef4444' : '#f59e0b'; ?>">
+                            <td><?php echo $row['nombre']; ?></td>
+                            <td><strong><?php echo $row['stock']; ?></strong></td>
+                            <td><a href="inventario.php" class="btn-mini">Surtir</a></td>
+                        </tr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <tr><td colspan="3" style="text-align:center; color: #94a3b8;">Inventario al día</td></tr>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
+
         <div class="card-moderna">
             <h3>📄 Últimas Facturas</h3>
             <table class="tabla-moderna">
@@ -71,7 +82,7 @@ while($row = $res_grafica->fetch_assoc()) {
                         <td>$<?php echo number_format($f['total'], 2); ?></td>
                         <td><?php echo $f['vendedor']; ?></td>
                         <td>
-                            <button onclick="imprimirTicket(<?php echo $f['id']; ?>)" class="btn-mini" style="background: #38bdf8;">
+                            <button onclick="imprimirTicket(<?php echo $f['id']; ?>)" class="btn-mini" style="background: #38bdf8; cursor: pointer;">
                                 <i class="fa-solid fa-print"></i>
                             </button>
                         </td>
@@ -81,24 +92,26 @@ while($row = $res_grafica->fetch_assoc()) {
             </table>
         </div>
     </div>
-<br>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<div class="card-moderna" style="grid-column: span 2; margin-bottom: 20px;">
-    <h3>📈 Rendimiento de Ventas (Últimos 7 días)</h3>
-    <div style="height: 300px;">
-        <canvas id="graficaVentas"></canvas>
+    <br>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <div class="card-moderna" style="margin-bottom: 20px;">
+        <h3>📈 Rendimiento de Ventas (Últimos 7 días)</h3>
+        <div style="height: 300px;">
+            <canvas id="graficaVentas"></canvas>
+        </div>
     </div>
-</div>
 </main>
+
 <script>
-    function imprimirTicket(id) {
+function imprimirTicket(id) {
     const url = `ticket.php?id=${id}`;
     const ancho = 400;
     const alto = 600;
     const x = (screen.width / 2) - (ancho / 2);
     const y = (screen.height / 2) - (alto / 2);
-    
     window.open(url, 'Ticket', `width=${ancho},height=${alto},left=${x},top=${y}`);
 }
 
@@ -110,10 +123,11 @@ new Chart(ctx, {
         datasets: [{
             label: 'Ventas Diarias ($)',
             data: <?php echo json_encode($totales); ?>,
-            backgroundColor: 'rgba(56, 189, 248, 0.5)',
+            backgroundColor: 'rgba(56, 189, 248, 0.2)',
             borderColor: '#38bdf8',
-            borderWidth: 2,
-            borderRadius: 5
+            borderWidth: 3,
+            tension: 0.3,
+            fill: true
         }]
     },
     options: {

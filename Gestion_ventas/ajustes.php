@@ -63,14 +63,24 @@ if (!$config) {
                         <input type="file" name="logo" class="input-dark">
                     </div>
 
-                    <div class="form-group">
-                        <label>Moneda</label>
-                        <select name="moneda" class="input-dark">
-                            <option value="$" <?php if(($config['moneda'] ?? '') == '$') echo 'selected'; ?>>Dólar ($)</option>
-                            <option value="S/" <?php if(($config['moneda'] ?? '') == 'S/') echo 'selected'; ?>>Soles (S/)</option>
-                            <option value="€" <?php if(($config['moneda'] ?? '') == '€') echo 'selected'; ?>>Euro (€)</option>
-                        </select>
-                    </div>
+                   <div class="form-group">
+    <label>Moneda Principal</label>
+    <select name="moneda" class="input-dark">
+        <option value="$" <?php if(($config['moneda'] ?? '') == '$') echo 'selected'; ?>>Dólar ($)</option>
+        <option value="Bs" <?php if(($config['moneda'] ?? '') == 'Bs') echo 'selected'; ?>>Bolívares (Bs)</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <label>Tasa de Cambio (1$ = ? Bs)</label>
+    <div style="position: relative; display: flex; align-items: center;">
+        <span style="position: absolute; left: 15px; color: #38bdf8; font-weight: bold;">Bs.</span>
+        <input type="number" step="0.01" name="tasa_dolar" class="input-dark" 
+               style="padding-left: 45px;" 
+               value="<?php echo $config['tasa_dolar'] ?? '1.00'; ?>" required>
+    </div>
+    <small style="color: #94a3b8; font-size: 0.75rem;">Define el valor del dólar del día para los cálculos.</small>
+</div>
                 </div>
 
                 <div style="margin-top: 30px; text-align: right;">
@@ -118,8 +128,14 @@ document.addEventListener("DOMContentLoaded", function() {
     const logoSidebar = document.getElementById('logo-sidebar'); // Recuerda añadir este ID en sidebar.php
     const nombreSidebar = document.querySelector('.business-name');
 
+	const inputTasa = document.querySelector('input[name="tasa_dolar"]');
+	if (inputTasa) {
+    inputTasa.addEventListener('input', function() {
+        if (this.value < 0) this.value = 0;
+    });
+}
     // --- VALIDACIÓN Y PREVIEW: NOMBRE ---
-    if (inputNombre) {
+    if (inputNombre) {moned
         inputNombre.addEventListener('input', function() {
             this.value = this.value.replace(/[^a-zA-Z0-9 ]/g, ''); // Permite números y letras
             if (pNombre) pNombre.innerText = this.value || 'Tu Negocio';
