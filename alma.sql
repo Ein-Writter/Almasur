@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 08-05-2026 a las 04:29:58
+-- Tiempo de generación: 08-05-2026 a las 04:56:13
 -- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- Versión de PHP: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -58,15 +58,16 @@ CREATE TABLE `configuracion` (
   `telefono` varchar(20) DEFAULT '',
   `mensaje_factura` text DEFAULT NULL,
   `logo` varchar(255) DEFAULT '',
-  `moneda` varchar(5) DEFAULT '$'
+  `moneda` varchar(5) DEFAULT '$',
+  `tasa_dolar` decimal(10,2) DEFAULT 1.00
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `configuracion`
 --
 
-INSERT INTO `configuracion` (`id`, `nombre_negocio`, `ruc`, `direccion`, `telefono`, `mensaje_factura`, `logo`, `moneda`) VALUES
-(1, 'Almasur', '12345678901234567890', '', '12345678901', '', 'uploads/logo_sistema_1778195354.jpeg', '$');
+INSERT INTO `configuracion` (`id`, `nombre_negocio`, `ruc`, `direccion`, `telefono`, `mensaje_factura`, `logo`, `moneda`, `tasa_dolar`) VALUES
+(1, 'Almasur', '12345678901234567890', '', '12345678901', '', 'uploads/logo_sistema_1778195354.jpeg', '$', 500.00);
 
 -- --------------------------------------------------------
 
@@ -92,7 +93,8 @@ INSERT INTO `detalle_ventas` (`id`, `id_venta`, `id_producto`, `cantidad`, `prec
 (2, 2, 24, 3, 2.00, NULL),
 (3, 3, 24, 1, 2.00, NULL),
 (4, 4, 19, 3, 1.50, NULL),
-(5, 4, 16, 1, 2.00, NULL);
+(5, 4, 16, 1, 2.00, NULL),
+(6, 5, 19, 2, 1.50, NULL);
 
 -- --------------------------------------------------------
 
@@ -131,12 +133,10 @@ INSERT INTO `logs_acceso` (`id`, `id_usuario`, `fecha_hora`) VALUES
 (5, 1, '2026-05-07 19:12:20'),
 (6, 9, '2026-05-07 19:15:50'),
 (7, 1, '2026-05-07 19:27:20'),
-(8, 9, '2026-05-07 21:50:11'),
-(9, 1, '2026-05-07 21:51:01'),
-(10, 9, '2026-05-07 21:56:57'),
-(11, 1, '2026-05-07 21:57:40'),
-(12, 9, '2026-05-07 21:58:23'),
-(13, 1, '2026-05-07 22:01:03');
+(8, 1, '2026-05-07 20:22:44'),
+(9, 8, '2026-05-07 22:10:06'),
+(10, 8, '2026-05-07 22:11:00'),
+(11, 1, '2026-05-07 22:11:11');
 
 -- --------------------------------------------------------
 
@@ -149,31 +149,28 @@ CREATE TABLE `productos` (
   `codigo` varchar(50) DEFAULT NULL,
   `nombre` varchar(100) NOT NULL,
   `categoria` varchar(50) DEFAULT NULL,
-  `marca` varchar(100) DEFAULT NULL,
   `descripcion` text DEFAULT NULL,
   `precio` decimal(10,2) NOT NULL,
   `stock` int(11) NOT NULL,
   `id_usuario` int(11) DEFAULT NULL,
   `creado_en` timestamp NOT NULL DEFAULT current_timestamp(),
-  `estado` int(11) DEFAULT 1
+  `estado` int(11) DEFAULT 1,
+  `marca` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `productos`
 --
 
-INSERT INTO `productos` (`id`, `codigo`, `nombre`, `categoria`, `marca`, `descripcion`, `precio`, `stock`, `id_usuario`, `creado_en`, `estado`) VALUES
-(30, 'PROD-263335', 'Arroz Tradicional', 'ALIMENTOS', 'mary', NULL, 2.00, 50, NULL, '2026-05-08 02:07:12', 1),
-(31, 'PROD-269351', 'Arroz Superior', 'ALIMENTOS', 'mary', NULL, 2.50, 50, NULL, '2026-05-08 02:10:54', 1),
-(32, 'PROD-268804', 'Harina de maíz blanco', 'ALIMENTOS', 'mary', NULL, 1.50, 50, NULL, '2026-05-08 02:11:38', 1),
-(33, 'PROD-266433', 'Pasta', 'ALIMENTOS', 'mary', NULL, 3.00, 50, NULL, '2026-05-08 02:12:42', 1),
-(34, 'PROD-264330', 'Harina de trigo', 'ALIMENTOS', 'mary', NULL, 5.00, 50, NULL, '2026-05-08 02:14:24', 1),
-(35, 'PROD-264559', 'Aceite de oliva', 'ALIMENTOS', 'mary', NULL, 4.00, 50, NULL, '2026-05-08 02:14:53', 1),
-(36, 'PROD-262259', 'Arroz', 'ALIMENTOS', 'Amanecer', NULL, 2.00, 50, NULL, '2026-05-08 02:17:06', 1),
-(37, 'PROD-268702', 'Azúcar 1kg', 'ALIMENTOS', 'Amanecer', NULL, 3.00, 50, NULL, '2026-05-08 02:19:34', 1),
-(38, 'PROD-266342', 'Leche  400 g', 'ALIMENTOS', 'Amanecer', NULL, 5.00, 50, NULL, '2026-05-08 02:21:19', 1),
-(39, 'PROD-265869', 'Aceite 500ml', 'ALIMENTOS', 'Amanecer', NULL, 3.00, 50, NULL, '2026-05-08 02:22:47', 1),
-(40, 'PROD-261329', 'Aceite 828ml', 'ALIMENTOS', 'Amanecer', NULL, 5.00, 50, NULL, '2026-05-08 02:24:01', 1);
+INSERT INTO `productos` (`id`, `codigo`, `nombre`, `categoria`, `descripcion`, `precio`, `stock`, `id_usuario`, `creado_en`, `estado`, `marca`) VALUES
+(16, '939393939', 'Arroz', 'Alimentos', NULL, 2.00, 18, NULL, '2026-04-22 23:47:21', 1, NULL),
+(18, '0001-0001-AAA', 'Jabon', 'Uso Diario', NULL, 3.00, 2, NULL, '2026-04-22 23:54:17', 1, NULL),
+(19, '0001-0001-AAB', 'Pasta', 'Alimentos', NULL, 1.50, 11, NULL, '2026-04-23 01:00:12', 1, NULL),
+(20, '0001-0001-AAC', 'Harina', 'Alimentos', NULL, 1.00, 3, NULL, '2026-04-23 01:00:41', 1, NULL),
+(21, '0001-0001-AAD', 'Cepillo de dientes', 'General', NULL, 1.75, 4, NULL, '2026-04-23 01:01:13', 1, NULL),
+(22, '0001-0001-AAE', 'Salsa de tomate', 'Alimentos', NULL, 3.00, 5, NULL, '2026-04-23 01:01:42', 1, NULL),
+(23, '0001-0001-AAF', 'Mayonesa Mavesa', 'Alimentos', NULL, 5.00, 6, NULL, '2026-04-23 01:02:11', 1, NULL),
+(24, '0001-0001-AAG', 'Crema dental Colgate', 'Uso Diario', NULL, 2.00, 0, NULL, '2026-04-23 02:01:07', 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -203,8 +200,11 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `nombre`, `usuario`, `email`, `password`, `rol`, `nombre_negocio`, `foto_perfil`, `direccion`, `telefono`, `codigo_recuperacion`, `codigo_verificacion`, `codigo_expira`, `creado_en`) VALUES
-(1, 'fran', 'admin', 'leonmontespc@gmail.com', '$2y$10$v9CntFFgZhuEGhOT1.kvBuZ6jN9uChB4BPEVlWuWRAjNgb7aYAxly', 'Administrador', '', 'uploads/perfil_1_1778205469.jpg', 'Piritu', '04245556364', NULL, NULL, NULL, '2026-01-25 22:58:14'),
-(9, 'Alex rivero', 'blaster', 'alexgabrielrs@gmail.com', '$2y$10$4jz23cHMo3eaLjN82YoJNua/Kd/9u434X0y/HXUN7P5/uefZHNu/6', 'Empleado', 'Almasur', 'uploads/perfil_9_1778205447.jpg', 'Piritu', '04245556364', NULL, NULL, NULL, '2026-05-07 23:14:39');
+(1, 'fran', 'admin', 'leonmontespc@gmail.com', '$2y$10$9/htRcNbqM6JaFdivG4fr.yBuoAe/V9DgKHXmhlFCaVu3J8gjm1Ge', 'Administrador', '', 'uploads/perfil_1_1778196483.jpg', 'Piritu', '04245556364', NULL, NULL, NULL, '2026-01-25 22:58:14'),
+(3, 'Roboco', 'robo', 'jesus@gmail.com', '$2y$10$hWW4/4cd7trvScAnsIgSLO4llzDPH9yyE1oeyQqfEx.H3lkEsDHju', 'Empleado', 'Almasur', 'uploads/jairo.png', 'Piritu', '04245556364', NULL, NULL, NULL, '2026-01-26 00:17:10'),
+(4, 'Jairo', 'jairo', 'admin@gmail.com', '$2y$10$VCSr0EfaiDMVpQ1lWp5yDu3fo2ieHWIBKJdAKMeG0PusDzaGBTUEi', 'Empleado', 'Almasur', 'uploads/jairo.png', 'Piritu', '04245556364', NULL, NULL, NULL, '2026-04-22 22:09:11'),
+(8, 'Alex Rivero', 'Alex', 'alexgabrielrs@gmail.com', '$2y$10$vyoTn7i.H2g4kG8830HPcOzwEZMTIENV1fRSbnHLP.0iqREHyoUFy', 'Empleado', 'Almasur', 'uploads/jairo.png', 'Piritu', '04245556364', NULL, NULL, NULL, '2026-04-23 00:42:41'),
+(9, 'Alex rivero', 'blaster', 'alexgabrielrs@gmail.com', '$2y$10$wF90AcihKsS6D.Z27b07BeQDA1bFiXmeRbon6qnvQCAlcB3JGlNhG', 'Empleado', 'Almasur', 'uploads/perfil_9_1778196430.jpg', 'Piritu', '04245556364', NULL, NULL, NULL, '2026-05-07 23:14:39');
 
 -- --------------------------------------------------------
 
@@ -219,8 +219,24 @@ CREATE TABLE `ventas` (
   `subtotal` float DEFAULT 0,
   `fecha` timestamp NOT NULL DEFAULT current_timestamp(),
   `total` decimal(10,2) NOT NULL,
-  `impuesto` float DEFAULT 0
+  `impuesto` float DEFAULT 0,
+  `pago_usd` decimal(10,2) DEFAULT 0.00,
+  `pago_bs_efectivo` decimal(10,2) DEFAULT 0.00,
+  `pago_bs_digital` decimal(10,2) DEFAULT 0.00,
+  `vuelto_usd` decimal(10,2) DEFAULT 0.00,
+  `tasa_momento` decimal(10,2) DEFAULT 1.00
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `ventas`
+--
+
+INSERT INTO `ventas` (`id`, `id_usuario`, `id_cliente`, `subtotal`, `fecha`, `total`, `impuesto`, `pago_usd`, `pago_bs_efectivo`, `pago_bs_digital`, `vuelto_usd`, `tasa_momento`) VALUES
+(1, 1, 1, 6, '2026-04-23 02:53:24', 6.96, 0.96, 0.00, 0.00, 0.00, 0.00, 1.00),
+(2, 1, 1, 6, '2026-04-23 02:57:38', 6.96, 0.96, 0.00, 0.00, 0.00, 0.00, 1.00),
+(3, 1, 1, 2, '2026-04-23 03:08:15', 2.32, 0.32, 0.00, 0.00, 0.00, 0.00, 1.00),
+(4, 1, 1, 6.5, '2026-04-27 00:03:42', 7.54, 1.04, 0.00, 0.00, 0.00, 0.00, 1.00),
+(5, 1, 1, 3, '2026-05-08 01:19:34', 3.48, 0.48, 0.00, 0.00, 0.00, 0.00, 1.00);
 
 --
 -- Índices para tablas volcadas
@@ -298,19 +314,19 @@ ALTER TABLE `configuracion`
 -- AUTO_INCREMENT de la tabla `detalle_ventas`
 --
 ALTER TABLE `detalle_ventas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `logs_acceso`
 --
 ALTER TABLE `logs_acceso`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
@@ -322,7 +338,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `ventas`
 --
 ALTER TABLE `ventas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
