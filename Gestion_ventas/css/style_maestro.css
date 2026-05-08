@@ -674,3 +674,39 @@ textarea.input-dark {
 }
 .invalid { color: #94a3b8; opacity: 0.6; } /* Gris apagado cuando no cumple */
 .valid { color: #34d399; font-weight: bold; }   /* Verde brillante cuando cumple */
+
+.form-grid-profesional {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Dos columnas */
+    gap: 15px;
+    padding: 20px;
+}
+
+.full-width { grid-column: span 2; }
+
+.input-with-button {
+    display: flex;
+    gap: 5px;
+}
+
+.input-with-button input { flex: 1; }
+
+.btn-secundario {
+    background: #34495e;
+    color: white;
+    border: none;
+    padding: 0 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-secundario:hover { background: var(--accent); }
+
+.select-dark {
+    background: #1a1c2d;
+    color: white;
+    padding: 10px;
+    border: 1px solid #333;
+    border-radius: 4px;
+}
