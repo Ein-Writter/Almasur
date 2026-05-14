@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $usuario_input = trim($_POST['usuario']); 
     $password_escrita = $_POST['password'];
 
-    // CORRECCIÓN: Agregamos la coma entre 'rol' y 'foto_perfil'
+    // 1. Mantenemos la consulta segura con prepare
     $stmt = $conn->prepare("SELECT id, nombre, password, rol, foto_perfil FROM usuarios WHERE usuario = ?");
     $stmt->bind_param("s", $usuario_input); 
     $stmt->execute();
@@ -16,16 +16,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($result->num_rows > 0) {
         $usuario = $result->fetch_assoc();
         
+        // 2. VERIFICACIÓN CRÍTICA: password_verify solo funciona con el hash generado por PHP
         if (password_verify($password_escrita, $usuario['password'])) {
             session_regenerate_id(); 
 
-            // Guardamos todo con los nombres exactos que espera el sidebar
+            // 3. CORRECCIÓN DE NOMBRES DE SESIÓN:
+            // Tu sidebar usa $_SESSION['foto_perfil'], pero aquí estabas guardando 'usuario_foto'
             $_SESSION['usuario_id']   = $usuario['id'];
             $_SESSION['nombre']       = $usuario['nombre'];
             $_SESSION['usuario_rol']  = $usuario['rol'];
-            $_SESSION['usuario_foto'] = $usuario['foto_perfil'];
+            $_SESSION['foto_perfil']  = $usuario['foto_perfil']; // Cambiado para que el sidebar lo lea
         
             $id_u = $usuario['id'];
+            // Asegúrate de que la tabla logs_acceso exista, si no, comenta esta línea
             $conn->query("INSERT INTO logs_acceso (id_usuario) VALUES ($id_u)");
 
             header("Location: menu.php");
@@ -40,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     $stmt->close();
 }
-?>
+?> 
 <style>
 
     * {
