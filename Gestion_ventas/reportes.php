@@ -1,4 +1,10 @@
-<?php 
+<?php
+session_start();
+// Si NO es administrador, lo mandamos al inicio
+if ($_SESSION['usuario_rol'] !== 'Administrador') {
+    header("Location: dashboard.php?error=acceso_denegado");
+    exit();
+} 
 include 'includes/header.php'; 
 include 'includes/sidebar.php'; 
 include 'config/db.php';
