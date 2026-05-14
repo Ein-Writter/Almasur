@@ -3,45 +3,51 @@ include_once 'config/db.php';
 if (!isset($_SESSION['usuario_id'])) { header("Location: index.php"); exit(); }
 
 $u_id = $_SESSION['usuario_id'];
+// Aseguramos que el rol coincida exactamente con la base de datos (Admin, Gerente, Empleado)
 $rol_usuario = $_SESSION['usuario_rol'] ?? 'Empleado';
 
-// --- NUEVA LÓGICA PARA EL LOGO Y FOTO ---
+// --- LÓGICA PARA EL LOGO Y FOTO ---
 $query_logo = $conn->query("SELECT logo FROM configuracion WHERE id = 1");
 $reg_logo = $query_logo->fetch_assoc();
 $ruta_logo = (!empty($reg_logo['logo'])) ? $reg_logo['logo'] : 'uploads/almasur.png';
 
-// Usamos 'foto_perfil' que es la variable que sincronizamos en el script anterior
 $foto_usuario = $_SESSION['foto_perfil'] ?? 'assets/img/default_avatar.jpg'; 
 ?>
 
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
         <div class="logo-container">
-    <img id="logo-sidebar" src="<?php echo $ruta_logo; ?>?v=<?php echo time(); ?>" alt="Logo" class="logo-sistema">
-    <span class="business-name">ALMASUR</span>
-</div>
+            <img id="logo-sidebar" src="<?php echo $ruta_logo; ?>?v=<?php echo time(); ?>" alt="Logo" class="logo-sistema">
+            <span class="business-name">ALMASUR</span>
+        </div>
         <button id="toggle-btn" class="toggle-btn">
             <i class="fa-solid fa-bars"></i>
         </button>
     </div>
 
     <a href="perfil.php" class="user-link">
-       <div class="user-panel">
-    <div class="image">
-        <img src="<?php echo $_SESSION['foto_perfil'] ?? 'uploads/default_avatar.png'; ?>?v=<?php echo time(); ?>" class="img-perfil-sidebar">
-    </div>
-    <div class="info">
-        <p class="user-name"><?php echo $_SESSION['nombre']; ?></p>
-        <small class="user-role"><?php echo $rol_usuario; ?></small>
-    </div>
-</div>
+        <div class="user-panel">
+            <div class="image">
+                <img src="<?php echo $_SESSION['foto_perfil'] ?? 'uploads/default_avatar.png'; ?>?v=<?php echo time(); ?>" class="img-perfil-sidebar">
+            </div>
+            <div class="info">
+                <p class="user-name"><?php echo $_SESSION['nombre']; ?></p>
+                <small class="user-role" style="color: <?php echo ($rol_usuario === 'Administrador') ? '#10b981' : '#38bdf8'; ?>">
+                    <?php echo $rol_usuario; ?>
+                </small>
+            </div>
+        </div>
     </a>
 
     <hr class="sidebar-divider">
 
     <nav class="sidebar-menu">
         <a href="menu.php"><i class="fa-solid fa-house"></i> <span>Inicio</span></a>
-        <a href="inventario.php"><i class="fa-solid fa-box"></i> <span>Inventario</span></a>
+        
+        <?php if ($rol_usuario === 'Administrador' || $rol_usuario === 'Gerente'): ?>
+            <a href="inventario.php"><i class="fa-solid fa-box"></i> <span>Inventario</span></a>
+        <?php endif; ?>
+
         <a href="ventas.php"><i class="fa-solid fa-cart-plus"></i> <span>Ventas</span></a>
     
         <?php if ($rol_usuario === 'Administrador'): ?>
@@ -68,7 +74,7 @@ $foto_usuario = $_SESSION['foto_perfil'] ?? 'assets/img/default_avatar.jpg';
 .main-content { transition: margin-left 0.3s ease; }
 .no-transition { transition: none !important; }
 
-/* --- 2. ESTILOS MODO EXPANDIDO (POR DEFECTO) --- */
+/* --- 2. ESTILOS MODO EXPANDIDO --- */
 .user-link { text-decoration: none; display: block; }
 .user-panel { text-align: center; padding: 20px 0; transition: all 0.3s; }
 .img-perfil-sidebar { 
@@ -79,15 +85,11 @@ $foto_usuario = $_SESSION['foto_perfil'] ?? 'assets/img/default_avatar.jpg';
     transition: all 0.3s; 
 }
 .user-name { color: white; margin: 0; font-weight: bold; white-space: nowrap; }
-.user-role { color: #38bdf8; text-transform: uppercase; font-size: 0.7rem; white-space: nowrap; }
-
-/* Margen para iconos en modo normal */
+.user-role { text-transform: uppercase; font-size: 0.7rem; white-space: nowrap; }
 .sidebar-menu a i { margin-right: 10px; width: 20px; text-align: center; }
 
-/* --- 3. TODO LO QUE CAMBIA AL COLAPSAR --- */
+/* --- 3. MODO COLAPSADO --- */
 .sidebar.collapsed { width: 70px !important; }
-
-/* Centrado de Header (Logo y Toggle) */
 .sidebar.collapsed .sidebar-header {
     display: flex;
     flex-direction: column;
@@ -96,8 +98,6 @@ $foto_usuario = $_SESSION['foto_perfil'] ?? 'assets/img/default_avatar.jpg';
 }
 .sidebar.collapsed .logo-container { margin-bottom: 15px; padding: 0 !important; }
 .sidebar.collapsed .logo-sistema { width: 40px !important; margin: 0 !important; }
-
-/* Centrado de Panel de Usuario */
 .sidebar.collapsed .user-panel {
     display: flex;
     justify-content: center;
@@ -105,8 +105,6 @@ $foto_usuario = $_SESSION['foto_perfil'] ?? 'assets/img/default_avatar.jpg';
     pointer-events: none;
 }
 .sidebar.collapsed .img-perfil-sidebar { width: 45px !important; height: 45px !important; }
-
-/* Centrado de Menú e Iconos */
 .sidebar.collapsed .sidebar-menu a {
     display: flex;
     justify-content: center;
@@ -114,15 +112,13 @@ $foto_usuario = $_SESSION['foto_perfil'] ?? 'assets/img/default_avatar.jpg';
     width: 100%;
 }
 .sidebar.collapsed .sidebar-menu i { margin: 0 !important; font-size: 1.3rem; }
-
-/* Centrado de Footer */
 .sidebar.collapsed .sidebar-footer a {
     display: flex;
     justify-content: center;
     padding: 15px 0 !important;
 }
 
-/* OCULTAR TEXTOS (Unificado) */
+/* OCULTAR TEXTOS AL COLAPSAR */
 .sidebar.collapsed .info,
 .sidebar.collapsed .business-name,
 .sidebar.collapsed .sidebar-menu span,
@@ -131,43 +127,16 @@ $foto_usuario = $_SESSION['foto_perfil'] ?? 'assets/img/default_avatar.jpg';
     display: none !important;
 }
 
-/* --- USER PANEL STYLES (Modo normal) --- */
+/* --- USER PANEL STYLES --- */
 .user-panel .info {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    margin: 0; padding: 0; width: 100%;
+    display: flex; flex-direction: column; align-items: center;
 }
 .user-panel { 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px 0; 
-    gap: 5px; /* Esto controla el espacio exacto entre foto, nombre y cargo */
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 20px 0; gap: 5px; 
 }
-
-.user-name { 
-    color: white; 
-    margin: 0 !important; /* Eliminamos el margen que lo empuja hacia abajo */
-    padding: 0 !important;
-    font-weight: bold; 
-    white-space: nowrap; 
-    text-align: center;
-    line-height: 1.2; /* Ajusta la altura de la línea para que no ocupe espacio de más */
-}
-
-.user-role { 
-    color: #38bdf8; 
-    text-transform: uppercase; 
-    font-size: 0.7rem; 
-    margin: 0 !important;
-    padding: 0 !important;
-    white-space: nowrap; 
-    line-height: 1;
-}
+.user-name { color: white; font-weight: bold; white-space: nowrap; text-align: center; line-height: 1.2; }
 </style>
 
 <script>
@@ -178,11 +147,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
     const actualizarIcono = (isCollapsed) => {
         const icon = toggleBtn.querySelector("i");
-        icon.classList.remove("fa-bars", "fa-chevron-right");
-        icon.classList.add(isCollapsed ? "fa-chevron-right" : "fa-bars");
+        if(icon) {
+            icon.classList.remove("fa-bars", "fa-chevron-right");
+            icon.classList.add(isCollapsed ? "fa-chevron-right" : "fa-bars");
+        }
     };
 
-    // 1. Cargar estado inicial
     const isCollapsed = localStorage.getItem("sidebarStatus") === "true";
     if (isCollapsed) {
         sidebar.classList.add("no-transition", "collapsed");
@@ -191,11 +161,9 @@ document.addEventListener("DOMContentLoaded", function() {
         setTimeout(() => sidebar.classList.remove("no-transition"), 100);
     }
 
-    // 2. Evento Único de Click
     toggleBtn.addEventListener("click", function() {
         const collapsed = sidebar.classList.toggle("collapsed");
         if (mainContent) mainContent.classList.toggle("expanded");
-        
         localStorage.setItem("sidebarStatus", collapsed);
         actualizarIcono(collapsed);
     });
