@@ -1,5 +1,10 @@
 <?php
 session_start();
+// Si NO es administrador, lo mandamos al inicio
+if ($_SESSION['usuario_rol'] !== 'Administrador') {
+    header("Location: dashboard.php?error=acceso_denegado");
+    exit();
+}
 include 'config/db.php';
 // ... después del session_start e include db.php ...
 
@@ -49,10 +54,20 @@ include 'includes/sidebar.php';
                     <td><code style="color: #38bdf8;"><?php echo htmlspecialchars($user['usuario']); ?></code></td>
                     <td><?php echo htmlspecialchars($user['email']); ?></td>
                     <td>
-                        <span class="badge <?php echo ($user['rol'] == 'Administrador') ? 'badge-verde' : 'badge-azul'; ?>">
-                            <?php echo ($user['rol'] == 'Administrador') ? '⚡ Admin' : '👤 Empleado'; ?>
-                        </span>
-                    </td>
+    <?php 
+    // Usamos strtolower para que no importe si en la DB dice 'GERENTE' o 'gerente'
+    $rol_db = strtolower($user['rol']); 
+
+    if ($rol_db === 'administrador') {
+        echo '<span class="badge" style="background:#10b981; color:white; padding:4px 8px; border-radius:4px;">Admin</span>';
+    } elseif ($rol_db === 'gerente') {
+        // Este es el CSS para el Gerente
+        echo '<span class="badge" style="background:#3b82f6; color:white; padding:4px 8px; border-radius:4px;">Gerente</span>';
+    } else {
+        echo '<span class="badge" style="background:#6366f1; color:white; padding:4px 8px; border-radius:4px;">Empleado</span>';
+    }
+    ?>
+</td>
                     <td style="text-align: center;">
                         <button class="btn-mini edit" title="Editar Permisos" onclick='abrirEditarEmpleado(<?php echo json_encode($user); ?>)'>
                             <i class="fa-solid fa-user-gear"></i>
@@ -103,13 +118,14 @@ include 'includes/sidebar.php';
                 </div>
             </div>
 
-            <div style="margin-top:20px;">
-                <label>Asignar Rol de Acceso</label>
-                <select name="rol" id="emp_rol" class="input-dark" style="width:100%;">
-                    <option value="Empleado">👤 Empleado (Ventas e Inventario)</option>
-                    <option value="Administrador">⚡ Administrador (Control Total)</option>
-                </select>
-            </div>
+<div class="form-group" style="margin-top:20px;">
+    <label>Asignar Rol de Acceso</label>
+    <select name="rol" id="emp_rol" class="input-dark" style="width:100%; padding: 10px;">
+        <option value="Empleado">Empleado (Ventas e Inventario)</option>
+        <option value="Gerente">Gerente (Ventas e Inventario + Reportes)</option>
+        <option value="Administrador">Administrador (Control Total)</option>
+    </select>
+</div>
             
             <div class="modal-footer">
                 <button type="button" onclick="cerrarModalEmpleado()" class="btn-rojo">Cancelar</button>
